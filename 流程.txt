@@ -1,6 +1,6 @@
 前置：删除浏览记录
 CPU使用率：https://www.cnblogs.com/ghost240/p/3863774.html
-
+IO与线程状态：https://www.cnblogs.com/onlywujun/archive/2012/11/25/2787167.html
 一、讲解线程知识
 a. 为什么需要线程
 b. I/O类型和CPU类型的区别，I/O操作包括ajax请求和读写文件，CPU操作包括写动画
