@@ -17,14 +17,25 @@ const app = new Koa()
 //   }).emit()
 //   writeFile('ddd.json', `["${data.join('","')}"]`)
 // })()
-router.get('/test', async (cxt, next) => {
-  console.log('is comming!')
-  await new Promise((s) => {
-    setTimeout(() => {
-      s(cxt.response.body = 'test')
-    }, 3000)
-  })
-})
-app.use(router.routes())
-app.use(router.allowedMethods())
-app.listen(3000)
+;(async function () {
+  function createRoutes (router) {
+    return new Promise((s, j) => {
+      for (let index = 0; index < 100; index++) {      
+        router.get('/test/' + index, async (cxt, next) => {
+          console.log('is comming!')
+          await new Promise(($s, $j) => {
+            setTimeout(() => {
+              $s(cxt.response.body = 'test' + index)
+            }, 3000)
+          })
+        })
+      }
+      s(router)
+    })
+  }
+  const _router = await createRoutes (router)
+  app.use(_router.routes())
+  app.use(_router.allowedMethods())
+  app.listen(3000)
+})()
+

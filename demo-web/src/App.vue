@@ -2,31 +2,41 @@
   <div id="app">
     <img alt="Vue logo" src="./assets/logo.png">
     <HelloWorld msg="Welcome to Your Vue.js App"/>
-    <div v-for="_img in imgs" :key="_img">
-      <img :src="_img"/>
-    </div>
+    <div> {{ texts.join(',') }} </div>
   </div>
 </template>
 
 <script>
 import HelloWorld from './components/HelloWorld.vue'
-import imgs from './imgs'
 import axios from 'axios'
+import BunchThread from './bunch-thread'
 export default {
   name: 'App',
   components: {
     HelloWorld
   },
   data: () => {
-    console.log(imgs)
     return {
-      imgs
+      texts: []
     }
   },
   created() {
-    axios.get('/test', (res) => {
-      console.log('test:', res)
-    })
+    const bunch = new BunchThread(5)
+    for (let index = 0; index < 100; index++) {
+      bunch.taskCalling(() => {
+        return new Promise((s, j) => {
+          axios.get('/test/' + index)
+          .then((res) => {
+            this.texts.push(res.data)
+            s()
+          })
+          .catch(function (error) {
+            j()
+            console.log(error)
+          })
+        })
+      })
+    }
   }
 }
 </script>
