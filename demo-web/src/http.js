@@ -1,4 +1,4 @@
-import $Promise from './promise'
+import $Promise from './$Promise'
 export default function Http () {
 }
 
