@@ -1,6 +1,5 @@
-
 export default class BunchThread {
-  constructor (limit, endCallback = () => { console.log('auto end') }) {
+  constructor (limit = 5, endCallback = () => console.log('auto end')) {
     this.limit = limit
     this.taskQueue = []
     this.taskLiving = 0
@@ -8,27 +7,30 @@ export default class BunchThread {
     return this
   }
 
-  taskCalling ($$task) {
+  taskCalling (task) {
     if (this.taskLiving >= this.limit) {
-      this.taskQueue.push($$task)
+      this.taskQueue.push(task)
     } else {
-      this.thread($$task)
+      this.thread(task)
     }
     this.taskLiving ++
     return this
   }
 
-  async thread ($$task) {
-    await $$task().catch()
-    this.taskLiving --
-    if (this.taskQueue.length) {
-      return this.thread(this.taskQueue.shift())
-    } else {
-      if (this.taskLiving <= 0) {
-        this.taskLiving = 0
-        this.endCallback && this.endCallback()
+  thread (task) {
+    var that = this
+    var promise = task && task()
+    promise.then(function () {
+      that.taskLiving --
+      if (that.taskQueue.length) {
+        return that.thread(that.taskQueue.shift())
+      } else {
+        if (that.taskLiving <= 0) {
+          that.taskLiving = 0
+          that.endCallback && that.endCallback()
+        }
       }
-    }
+    })
   }
 
   finally (callback) {
